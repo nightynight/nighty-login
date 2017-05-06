@@ -20,9 +20,17 @@ adminHomePageUrl, messageMethod为可选参数
 nighty.Login.isLogin(serverBaseUrl, messageMethod)，messageMethod为可选参数
 nighty.Login.logout(serverBaseUrl, loginPage, messageMethod)，messageMethod为可选参数
 nighty.Login.needLogin(serverBaseUrl, loginPage, messageMethod)，messageMethod为可选参数
+如果一个页面需要登录后才能查看，则只需要在<body>之前调用
+nighty.Login.needLogin(serverBaseUrl, loginPage, messageMethod)
+
+注：
+1.serverBaseUrl为后台API的基本URL，如http://localhost:8080/nighty-app
+2.userHomePageUrl为用户登录后需要跳转的主页的url
+3.adminHomePageUrl为管理员登录后需要跳转的主页的url，如果不传，则也跳转到userHomePageUrl
+4.messageMethod为弹出提示信息的方法，如果不传，则为alert
+
 
 退出登录还可以是：给一个按钮添加一个名为"nighty_logout"的class，并提供一下几个参数
 data-server-base-url 必填
 data-login-page 必填
-data-message-method 可选
 
