@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace命名空间,作用就是对sql进行分类化管理,理解sql隔离
+注意:使用mapper代理方法开发,namespace有特殊重要的作用,namespace等于mapper接口地址-->
+<mapper namespace="com.brokepal.nighty.login.sys.persist.UserDao">
+
+    <!--mapper作用:为DAO接口方法提供sql语句配置-->
+
+    <sql id="userColumns">
+        a.id AS "id",
+        a.nickname AS "nickname",
+        a.username AS "username",
+        a.password AS "password",
+        a.salt AS "salt",
+        a.email AS "email",
+        a.phone AS "phone",
+        a.create_time AS "createTime",
+        a.last_login_time AS "lastLoginTime"
+    </sql>
+
+    <sql id="userJoins">
+    </sql>
+
+    <insert id="createUser" parameterType="User">
+        INSERT INTO t_user (id,nickname,username,password,email,phone,salt)
+        VALUES (#{id},#{nickname},#{username},#{password},#{email},#{phone},#{salt})
+    </insert>
+
+    <update id="updatePassword">
+        UPDATE t_user
+        SET password=#{password}
+        WHERE email=#{email}
+    </update>
+    <update id="updateLastLoginTime">
+        UPDATE t_user
+        SET last_login_time=#{lastLoginTime}
+        WHERE username=#{username}
+    </update>
+
+    <select id="getUserByUsername" parameterType="String" resultType="User">
+        SELECT
+        <include refid="userColumns"/>
+        FROM t_user a
+        <include refid="userJoins"/>
+        WHERE a.username=#{username}
+    </select>
+
+    <select id="getUserByEmail" parameterType="String" resultType="User">
+        SELECT
+        <include refid="userColumns"/>
+        FROM t_user a
+        <include refid="userJoins"/>
+        WHERE a.email=#{email}
+    </select>
+
+</mapper>

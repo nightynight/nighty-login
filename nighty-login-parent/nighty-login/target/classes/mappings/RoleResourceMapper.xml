@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace命名空间,作用就是对sql进行分类化管理,理解sql隔离
+注意:使用mapper代理方法开发,namespace有特殊重要的作用,namespace等于mapper接口地址-->
+<mapper namespace="com.brokepal.nighty.login.sys.persist.RoleResourceDao">
+
+    <!--mapper作用:为DAO接口方法提供sql语句配置-->
+
+    <sql id="roleResourceColumns">
+        a.id AS "id",
+        a.role_id AS "roleId",
+        a.resource_id AS "resourceId"
+    </sql>
+
+    <sql id="roleResourceJoins">
+    </sql>
+
+    <select id="findList" parameterType="RoleResource" resultType="RoleResource">
+        SELECT
+        <include refid="roleResourceColumns"/>
+        FROM t_role_resource a
+        <include refid="roleResourceJoins"/>
+        <where>
+            <if test="id != null and id != ''">
+                AND a.id = #{id}
+            </if>
+            <if test="roleId != null and roleId != ''">
+                AND a.role_id = #{roleId}
+            </if>
+            <if test="resourceId != null and resourceId != ''">
+                AND a.resource_id = #{resourceId}
+            </if>
+        </where>
+        ORDER BY a.id
+    </select>
+</mapper>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:context="http://www.springframework.org/schema/context" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
+	default-lazy-init="true">
+
+	<description>nighty应用配置 </description>
+	
+	<context:property-placeholder ignore-unresolvable="true" location="classpath*:/application.properties" />
+	
+	<!-- 使用annotation 自动注册bean, 并保证@Required、@Autowired的属性被注入 -->
+	<context:component-scan base-package="com.brokepal.nighty">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation" expression="org.springframework.web.bind.annotation.ControllerAdvice" />
+	</context:component-scan>
+
+	<!-- 开启AOP监听 只对当前配置文件有效 -->
+	<aop:aspectj-autoproxy proxy-target-class="true" expose-proxy="true" />
+	<aop:config expose-proxy="true" proxy-target-class="true">
+		<aop:pointcut id="txPointcut" expression="execution(* com.brokepal.nighty..service..*+.*(..)) or execution(* com.brokepal.nighty..task..*+.*(..))" />
+		<aop:advisor id="txAdvisor" advice-ref="txAdvice" pointcut-ref="txPointcut" />
+	</aop:config>
+
+	<!-- 数据源配置, 使用DBCP数据库连接池 -->
+	<bean id="platformDS" class="com.alibaba.druid.pool.DruidDataSource" destroy-method="close">
+		<property name="validationQuery" value="${pt.jdbc.validate.sql}" />
+		<property name="driverClassName" value="${pt.jdbc.driver}" />
+		<property name="url" value="${pt.jdbc.url}" />
+		<property name="username" value="${pt.jdbc.username}" />
+		<property name="password" value="${pt.jdbc.password}" />
+		<property name="maxActive" value="${dbcp.maxActive}" />
+		<property name="maxIdle" value="${dbcp.maxIdle}" />
+		<property name="defaultAutoCommit" value="false" />
+		<property name="timeBetweenEvictionRunsMillis" value="3600000" />
+		<property name="minEvictableIdleTimeMillis" value="3600000" />
+	</bean>
+
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="doSend*" propagation="REQUIRES_NEW" />
+			<!-- hibernate4必须配置为开启事务，否则getCurrentSession()获取不到 -->
+			<tx:method name="get**" propagation="REQUIRED" read-only="true" />
+			<tx:method name="count**" propagation="REQUIRED" read-only="true" />
+			<tx:method name="find**" propagation="REQUIRED" read-only="true" />
+			<tx:method name="list**" propagation="REQUIRED" read-only="true" />
+			<tx:method name="*" propagation="REQUIRED" no-rollback-for="AuthenticationException,UserPasswordRetryLimitExceedException,UserPasswordNotMatchException" />
+
+		</tx:attributes>
+	</tx:advice>
+
+	<!-- 如下实现是通过线程池执行的 -->
+	<task:executor id="executor" pool-size="10" />
+	<task:scheduler id="scheduler" pool-size="10" />
+	<task:annotation-driven scheduler="scheduler" executor="executor" proxy-target-class="true" />
+
+	<!-- MyBatis配置 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- 配置相关数据源 -->
+		<property name="dataSource" ref="platformDS"/>
+		<!-- 配置扫描实体的包 -->
+		<property name="typeAliasesPackage" value="com.brokepal.nighty"/>
+		<!-- 显示指定Mapper文件位置 -->
+		<property name="mapperLocations" value="classpath*:/mappings/**/*.xml"/>
+		<!--MyBatis参数配置文件  -->
+		<property name="configLocation" value="classpath:/mybatis-config.xml"/>
+	</bean>
+	<bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!--扫描配置包下面的Dao文件  -->
+		<property name="basePackage" value="com.brokepal.nighty"/>
+		<!--注入SqlSessionFactory-->
+		<property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+	</bean>
+
+	<!-- 事务配置 -->
+	<bean id="transactionManager"
+		  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="platformDS"></property>
+	</bean>
+
+	<!-- 使用annotation定义事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
+</beans>

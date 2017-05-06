@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/nighty-app/nighty-app.iml" filepath="$PROJECT_DIR$/nighty-app/nighty-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nighty-login/nighty-login.iml" filepath="$PROJECT_DIR$/nighty-login/nighty-login.iml" />
+      <module fileurl="file://$PROJECT_DIR$/nighty-login-parent.iml" filepath="$PROJECT_DIR$/nighty-login-parent.iml" />
+    </modules>
+  </component>
+</project>
