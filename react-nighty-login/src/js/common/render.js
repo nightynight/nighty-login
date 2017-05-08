@@ -5,7 +5,7 @@
 import React from 'react';
 import ReactDom from 'react-dom';
 
-window.nighty = {}; //框架命名空间
+window.nighty = window.nighty || {}; //框架命名空间
 
 import Login from '../../component/login/Login';
 nighty.Login = {};

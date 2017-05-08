@@ -20287,7 +20287,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
  * Created by chenchao on 17/4/16.
  */
 
-window.nighty = {}; //框架命名空间
+window.nighty = window.nighty || {}; //框架命名空间
 
 nighty.Login = {};
 nighty.Login.render = function (_ref) {
