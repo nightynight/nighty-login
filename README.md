@@ -20,6 +20,8 @@
 ##### nighty.Login.isLogin(serverBaseUrl, messageMethod)，messageMethod为可选参数
 ##### nighty.Login.logout(serverBaseUrl, loginPage, messageMethod)，messageMethod为可选参数
 ##### nighty.Login.needLogin(serverBaseUrl, loginPage, messageMethod)，messageMethod为可选参数
+##### nighty.Login.getSessionId()
+##### nighty.Login.getToken()
 如果一个页面需要登录后才能查看，则只需要在<body>之前调用
 ##### nighty.Login.needLogin(serverBaseUrl, loginPage, messageMethod)
 
