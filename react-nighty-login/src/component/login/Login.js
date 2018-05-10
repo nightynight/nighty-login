@@ -117,6 +117,18 @@ class Login extends React.Component {
         }
     }
 
+    static getSessionId(){
+        var storage = window.localStorage;
+        var sessionId = storage.getItem(STORAGE_PRE + 'sessionId');
+        return sessionId;
+    }
+
+    static getToken(){
+        var storage = window.localStorage;
+        var token = storage.getItem(STORAGE_PRE + 'token');
+        return token;
+    }
+
     loginSubmit = (e) => {
         e.preventDefault();
         $("#btn_login").attr("disabled","disabled");
